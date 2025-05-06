@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!-- saved from url=(0069)file:///C:/Users/MUSA%20RANTSOTI/Musa%20Rantsoti/Sasa/sasa1/word.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>IWB Software Tools</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .product { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+    .product h3 { margin-top: 0; }
+    .price { margin: 10px 0; }
+    button { margin: 0 5px; }
+    #cart { border: 2px solid green; padding: 15px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>IWB Software Tools</h1>
+
+<div id="products">
+      <div class="product">
+        <h3>DataGuard Pro</h3>
+        <p>Permanently destroys sensitive data with government-grade wiping standards.</p>
+        <p class="price">Monthly: M150, Annual: M1500</p>
+        <div>
+          <button onclick="updateQty(1, -1)">–</button>
+          <span id="qty-1">1</span>
+          <button onclick="updateQty(1, 1)">+</button>
+          <button onclick="addToCart(1)">Add to Cart</button>
+        </div>
+        <p>Stock Left: <span id="stock-1">10</span></p>
+      </div>
+    
+      <div class="product">
+        <h3>RecoverMaster</h3>
+        <p>Recover deleted files from damaged or corrupted storage.</p>
+        <p class="price">Monthly: M200, Annual: M2000</p>
+        <div>
+          <button onclick="updateQty(2, -1)">–</button>
+          <span id="qty-2">1</span>
+          <button onclick="updateQty(2, 1)">+</button>
+          <button onclick="addToCart(2)">Add to Cart</button>
+        </div>
+        <p>Stock Left: <span id="stock-2">8</span></p>
+      </div>
+    
+      <div class="product">
+        <h3>WipeWizard</h3>
+        <p>Performs scheduled secure data wiping across multiple drives.</p>
+        <p class="price">Monthly: M170, Annual: M1700</p>
+        <div>
+          <button onclick="updateQty(3, -1)">–</button>
+          <span id="qty-3">1</span>
+          <button onclick="updateQty(3, 1)">+</button>
+          <button onclick="addToCart(3)">Add to Cart</button>
+        </div>
+        <p>Stock Left: <span id="stock-3">12</span></p>
+      </div>
+    
+      <div class="product">
+        <h3>SecureSync</h3>
+        <p>Encrypts and syncs data across devices with auto-destruction on breach.</p>
+        <p class="price">Monthly: M250, Annual: M2500</p>
+        <div>
+          <button onclick="updateQty(4, -1)">–</button>
+          <span id="qty-4">1</span>
+          <button onclick="updateQty(4, 1)">+</button>
+          <button onclick="addToCart(4)">Add to Cart</button>
+        </div>
+        <p>Stock Left: <span id="stock-4">5</span></p>
+      </div>
+    </div>
+
+<h2>Cart</h2>
+<div id="cart"></div>
+
+<script>
+const tools = [
+  {
+    id: 1,
+    name: "DataGuard Pro",
+    description: "Permanently destroys sensitive data with government-grade wiping standards.",
+    monthly: 150,
+    yearly: 1500,
+    stock: 10
+  },
+  {
+    id: 2,
+    name: "RecoverMaster",
+    description: "Recover deleted files from damaged or corrupted storage.",
+    monthly: 200,
+    yearly: 2000,
+    stock: 8
+  },
+  {
+    id: 3,
+    name: "WipeWizard",
+    description: "Performs scheduled secure data wiping across multiple drives.",
+    monthly: 170,
+    yearly: 1700,
+    stock: 12
+  },
+  {
+    id: 4,
+    name: "SecureSync",
+    description: "Encrypts and syncs data across devices with auto-destruction on breach.",
+    monthly: 250,
+    yearly: 2500,
+    stock: 5
+  }
+];
+
+let cart = {};
+
+function renderProducts() {
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+  tools.forEach(tool => {
+    container.innerHTML += `
+      <div class="product">
+        <h3>${tool.name}</h3>
+        <p>${tool.description}</p>
+        <p class="price">Monthly: M${tool.monthly}, Annual: M${tool.yearly}</p>
+        <div>
+          <button onclick="updateQty(${tool.id}, -1)">–</button>
+          <span id="qty-${tool.id}">1</span>
+          <button onclick="updateQty(${tool.id}, 1)">+</button>
+          <button onclick="addToCart(${tool.id})">Add to Cart</button>
+        </div>
+        <p>Stock Left: <span id="stock-${tool.id}">${tool.stock}</span></p>
+      </div>
+    `;
+  });
+}
+
+function updateQty(id, delta) {
+  const qtySpan = document.getElementById(`qty-${id}`);
+  let qty = parseInt(qtySpan.textContent);
+  qty = Math.max(1, qty + delta);
+  qtySpan.textContent = qty;
+}
+
+function addToCart(id) {
+  const qty = parseInt(document.getElementById(`qty-${id}`).textContent);
+  const tool = tools.find(t => t.id === id);
+  if (tool.stock >= qty) {
+    tool.stock -= qty;
+    document.getElementById(`stock-${id}`).textContent = tool.stock;
+    if (!cart[id]) cart[id] = 0;
+    cart[id] += qty;
+    renderCart();
+    checkRecommendations(id);
+  } else {
+    alert("Not enough stock!");
+  }
+}
+
+function renderCart() {
+  const cartDiv = document.getElementById("cart");
+  cartDiv.innerHTML = "";
+  Object.keys(cart).forEach(id => {
+    const tool = tools.find(t => t.id == id);
+    cartDiv.innerHTML += `<p>${tool.name} x ${cart[id]}</p>`;
+  });
+  if (Object.keys(cart).length > 0) {
+    cartDiv.innerHTML += '<button onclick="completePurchase()">Complete Purchase</button>';
+  }
+}
+
+function completePurchase() {
+  alert("Payment processed and stock updated. Thank you for your purchase!");
+  cart = {};
+  renderCart();
+}
+
+function checkRecommendations(id) {
+  const tool = tools.find(t => t.id === id);
+  alert(`You added ${tool.name}. You may also like similar products like ${tools.filter(t => t.id !== id)[0].name}.`);
+}
+
+renderProducts();
+</script>
+
+
+
+</body></html>
